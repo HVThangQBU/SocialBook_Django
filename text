@@ -45,3 +45,7 @@
 - Thiết lập urlpatterns cho MEDIA
 urlpatterns = urlpatterns+static(settings.MEDIA_URL,
                                  document_root=settings.MEDIA_ROOT)
+-  Đăng kí app model trong admin
+  from .models import Profile
+
+    admin.site.register(Profile)
