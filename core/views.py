@@ -8,8 +8,20 @@ from .models import Profile, Post
 @login_required(login_url='signin')
 def index(request):
   user_object = User.objects.get(username=request.user.username)
+  print(user_object)
   user_profile = Profile.objects.get(user=user_object)
-  return render(request, 'index.html', {'user_profile': user_profile})
+  print(user_profile)
+  posts = Post.objects.all()
+  user_profiles = Profile.objects.all()
+  print(user_profiles)
+  for us in user_profiles:
+    print(1232,us.user)
+  for po in posts:
+    print(1,po.user)
+
+
+
+  return render(request, 'index.html', {'user_profile': user_profile, 'posts': posts, 'user_profiles':user_profiles})
 
 
 
