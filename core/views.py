@@ -3,28 +3,41 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import auth,User
 from django.contrib.auth.decorators import login_required
-from .models import Profile, Post
+from .models import Profile, Post, LikePost
 
 @login_required(login_url='signin')
 def index(request):
   user_object = User.objects.get(username=request.user.username)
-  print(user_object)
+  print("ten", user_object)
   user_profile = Profile.objects.get(user=user_object)
-  print(user_profile)
   posts = Post.objects.all()
   user_profiles = Profile.objects.all()
-  print(user_profiles)
-  for us in user_profiles:
-    print(1232,us.user)
-  for po in posts:
-    print(1,po.user)
+  like = LikePost.objects.filter(username=user_object)
+  
+  print("like ten ", like)
 
 
+  
+  return render(request, 'index.html', {'user_profile': user_profile, 'posts': posts, 'user_profiles':user_profiles, 'like':like})
 
-  return render(request, 'index.html', {'user_profile': user_profile, 'posts': posts, 'user_profiles':user_profiles})
 
-
-
+@login_required(login_url='signin')
+def like_post(request):
+  username = request.user.username
+  post_id = request.GET.get('post_id')
+  post = Post.objects.get(id=post_id)
+  like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
+  if like_filter == None:
+    new_like = LikePost.objects.create(post_id=post_id, username=username)
+    new_like.save()
+    post.no_of_likes = post.no_of_likes + 1
+    post.save()
+    return redirect('/')
+  else:
+    like_filter.delete()
+    post.no_of_likes = post.no_of_likes - 1
+    post.save()
+    return redirect('/')
 @login_required(login_url='signin')
 def settings(request):
   user_profile = Profile.objects.get(user=request.user)
